@@ -4,3 +4,4 @@ __pycache__
 credentials.json
 token.json
 saved_start_page_token.txt
+codeExamples/client_secret.json
