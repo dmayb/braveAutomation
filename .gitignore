@@ -6,7 +6,8 @@ token.json
 saved_start_page_token.txt
 codeExamples/client_secret.json
 code.zip
-env
-notInUse/saved_spreadsheet_data
-notInUse/previous_data.csv
+notInUse/
+
 previous_data.csv
+mailchimpCredentials.json
+twilioCredentials.json

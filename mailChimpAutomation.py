@@ -1,12 +1,12 @@
 import mailchimp3
-import os
-from dotenv import load_dotenv
 import hashlib
+import json
 
-load_dotenv()
+CREDENTIALS_FILE = "mailchimpCredentials.json"
+CREDENTIALS = json.load(open(CREDENTIALS_FILE))
+API_KEY = CREDENTIALS["API_KEY"]
+LIST_ID = CREDENTIALS["LIST_ID"]
 
-API_KEY = os.getenv("API_KEY")
-LIST_ID = os.getenv("LIST_ID")
 
 api = mailchimp3.MailChimp(API_KEY)
 
