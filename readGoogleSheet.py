@@ -2,13 +2,24 @@ from __future__ import print_function
 from googleapiclient.discovery import build
 from connectGoogleSheet import getCredentials
 import pandas as pd
+from pprint import pprint
+
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
 # The ID and range of a sample spreadsheet.
+# SAMPLE_SPREADSHEET_ID = 1zdn5n8yNJ9yQ1CIHc-zq1ud0QXWfVNAmcbcuSVuDqq8 # original!
 SAMPLE_SPREADSHEET_ID = '1sakXLCKCg9GWM_cyVYmOBwy76k-iuU0fn7LAn7UKz-o'
+SAVED_SPREADSHEET_ID = '1d7Mj-Dyho4vPNYZppv_U96JbV5yb79OGzskkZQsSFrM'
+SHEET_ID = 52488024
+SAVED_SHEET_ID = 0
+COPY_REQUEST = {
+    # The ID of the spreadsheet to copy the sheet to.
+    'destination_spreadsheet_id': SAVED_SPREADSHEET_ID}
+
 SHEET_NAME = 'תגובות לטופס 1'
 SAMPLE_RANGE_NAME = SHEET_NAME + "!A2:J"
 
+DF_FILENAME = "previous_data.csv"
 
 def checkChanges():
     creds = getCredentials(SCOPES)
@@ -58,14 +69,38 @@ def readSheet():
 
     columns = ["timeStamp", "fullName", "phoneNumber", "mailAddress", "area",
                "leadCommunity", "helpWith", "remarks", "city", "status"]
-    df1 = pd.DataFrame(values, columns=columns)
-    df2 = df1.copy(deep=True)
-    df2["fullName"][0] = "שם"
-    
+    new = pd.DataFrame(values, columns=columns)
+    writeSavedDf(new)
+    # saved = readSavedDf()
+    # compareData(saved, new)
 
 
+def compareData(saved, new):
+    df = pd.concat([saved, new])
+    df = df.reset_index(drop=True)
+    df_gpby = df.groupby(list(df.columns))
+    idx = [x[0] for x in df_gpby.groups.values() if len(x) == 1]
+    diff = df.reindex(idx)
 
 
+def writeSavedDf(df):
+    with open(DF_FILENAME, "w", encoding="utf-8") as fd:
+        df.to_csv(fd)
+
+
+def readSavedDf():
+    with open(DF_FILENAME, "r", encoding="utf-8") as fd:
+        df = pd.read_csv(fd)
+        return df
+
+
+def copySpreadsheet(creds):
+    service = build('sheets', 'v4', credentials=creds)
+    sheet = service.spreadsheets().sheets()
+    request = sheet.copyTo(spreadsheetId=SAMPLE_SPREADSHEET_ID, sheetId=SHEET_ID, body=COPY_REQUEST)
+    response = request.execute()
+    pprint(response)
 
 if __name__ == '__main__':
-    readSheet()
+    # readSheet()
+    copySpreadsheet(getCredentials(SCOPES))
