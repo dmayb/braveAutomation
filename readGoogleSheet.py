@@ -3,7 +3,7 @@ from googleapiclient.discovery import build
 from connectGoogleSheet import getCredentials
 import pandas as pd
 import numpy as np
-
+from mailChimpAutomation import createMember
 # If modifying these scopes, delete the file token.json.
 SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
 # The ID and range of a sample spreadsheet.
@@ -90,9 +90,17 @@ def readSheet():
         return
 
     # todo:
-    # sendEmail()  # ~~~~~~Karin add here~~~~~~~~~
     # addTo ?
     # add to our database (our pickled DataFrame)
+    for index, line in newLines.iterrows():
+        firstLastName = line["fullName"].split()
+        if len(firstLastName) == 0:
+            pass #  todo
+        firstName = firstLastName[0]
+        lastName = ""
+        if len(firstLastName) > 1:
+            lastName = " ".join(firstLastName[1:])
+        createMember(line["mailAddress"], firstName, lastName)
     saved = saved.append(newLines, ignore_index=True)  # append new data
     print(saved)
     writeSavedDf(saved)   # save new data
