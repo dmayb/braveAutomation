@@ -14,7 +14,7 @@ CREDENTIALS = json.load(open(CREDENTIALS_FILE))
 ACCOUNT_SID = CREDENTIALS["ACCOUNT_SID"]
 AUTH_TOKEN = CREDENTIALS["AUTH_TOKEN"]
 SMS_SENDER_NUMBER = '+13018046615'
-WHATSAPP_SENDER_NUMBER = ""
+WHATSAPP_SENDER_NUMBER = "+14155238886"
 
 DEFAULT_MSG = ""
 
@@ -23,14 +23,16 @@ def sendSMS(number, name="", msg=DEFAULT_MSG):
     __sendMessage(SMS_SENDER_NUMBER, getNumberInRightFormat(number), name, msg)
 
 
-def sendWhatsApp(name, number, msg=DEFAULT_MSG):
-    __sendMessage(WHATSAPP_SENDER_NUMBER, getNumberInRightFormat(number), name, msg)
+def sendWhatsApp(number, name, msg=DEFAULT_MSG):
+    __sendMessage("whatsapp:" + WHATSAPP_SENDER_NUMBER, "whatsapp:" + getNumberInRightFormat(number), name, msg)
 
 
 def getNumberInRightFormat(number):
-    if number.startsWith("0"):
+    if number.startswith("0"):
         return "+972" + number[1:]
-    return number
+    if number.startswith("+"):
+        return number
+    return "+972" + number
 
 
 def __sendMessage(numberFrom, numberTo, name, msg):
