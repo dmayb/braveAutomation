@@ -6,7 +6,8 @@ CREDENTIALS_FILE = "mailchimpCredentials.json"
 CREDENTIALS = json.load(open(CREDENTIALS_FILE))
 API_KEY = CREDENTIALS["API_KEY"]
 LIST_ID = CREDENTIALS["LIST_ID"]
-
+DEFAULT_TAG = 'אין עיר'
+NUDNIK_TAG = "נודניק"
 
 api = mailchimp3.MailChimp(API_KEY)
 
@@ -15,7 +16,7 @@ def getHashedEmail(email):
 
 # only tag is tel aviv
 # add recurring tag if you want 'nudnik', it'll send a mail three days after
-def createMember(email, firstName, lastName,  tags=['tel aviv'], status='subscribed'):
+def createMember(email, firstName, lastName,  tags=[DEFAULT_TAG], status='subscribed'):
     api.lists.members.create_or_update(LIST_ID,  subscriber_hash=getHashedEmail(email), data={'email_address': email, 'status': status, 'tags': tags, 'status_if_new': status,
                                             'merge_fields': {'FNAME': firstName, 'LNAME': lastName,  }});
 

@@ -49,10 +49,36 @@ def runAutomation():
     if newLines is None:
         return
 
+    sendSnoozer(recent)  # send snoozer to doers@brave-together if a volunteer doesnt have an activity yet
     onNewVolunteers(newLines)
     saved = saved.append(newLines, ignore_index=True)  # append new data
     print(saved)
     writeSavedDf(saved)   # save new data
+
+
+def sendSnoozer(volunteers):
+    for index, volunteer in volunteers.iterrows():
+        sendEmail(volunteer)
+
+
+def sendEmail(volunteer):
+    """
+    send and email to the volunteer if it is a new one
+    send an email to the volunteer's area organizer of the volunteer doesnt have an activity yet
+    (status column on the google sheet)
+    :param volunteer: DataFrame object with volunteer data (with the columns COLUMNS_NAMES)
+    """
+    firstName, lastName = getSeparatedName(volunteer["fullName"])
+    city = volunteer["city"]
+    if city not in EXISTING_CITIES:
+        city = mailChimpAutomation.DEFAULT_TAG
+    tags = [city]
+    if volunteer["status"] == "1":
+        tags.append(mailChimpAutomation.NUDNIK_TAG)
+    print("sending msgs to: " + firstName + " " + lastName)
+    print("email: " + volunteer["mailAddress"] + " , city: " + city)
+    # when adding a new member it sends a mail
+    mailChimpAutomation.createMember(volunteer["mailAddress"], firstName, lastName, tags)
 
 
 def onNewVolunteers(newData):
@@ -63,14 +89,7 @@ def onNewVolunteers(newData):
     :param newData: a DataFrame (pandas) object holding the new volunteers data with the columns COLUMNS_NAMES
     """
     for index, newVolunteer in newData.iterrows():
-        firstName, lastName = getSeparatedName(newVolunteer["fullName"])
-        city = newVolunteer["city"]
-        if city not in EXISTING_CITIES:
-            city = "אין עיר"
-        print("sending msgs to: " + firstName + " " + lastName)
-        print("email: " + newVolunteer["mailAddress"] + " , city: " + city)
-        # when adding a new member it sends a mail
-        mailChimpAutomation.createMember(newVolunteer["mailAddress"], firstName, lastName, [city])
+        sendEmail(newVolunteer)
         messagesAutomation.sendSMS(newVolunteer["phoneNumber"], newVolunteer["fullName"], TEXT_MSG_TEMPLATE)
         messagesAutomation.sendWhatsApp(newVolunteer["phoneNumber"], newVolunteer["fullName"], TEXT_MSG_TEMPLATE)
 
