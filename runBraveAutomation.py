@@ -78,7 +78,7 @@ def sendEmail(volunteer):
     print("sending msgs to: " + firstName + " " + lastName)
     print("email: " + volunteer["mailAddress"] + " , city: " + city)
     # when adding a new member it sends a mail
-    mailChimpAutomation.createMember(volunteer["mailAddress"], firstName, lastName, tags)
+    mailChimpAutomation.createOrUpdateMember(volunteer["mailAddress"], firstName, lastName, tags)
 
 
 def onNewVolunteers(newData):

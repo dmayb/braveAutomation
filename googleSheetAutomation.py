@@ -5,8 +5,6 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 import pandas as pd
 
-# todo: changes the credntials to be on the brave-toghethe account
-
 
 def getCredentials(scopes):
     creds = None

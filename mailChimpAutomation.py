@@ -16,7 +16,7 @@ def getHashedEmail(email):
 
 # only tag is tel aviv
 # add recurring tag if you want 'nudnik', it'll send a mail three days after
-def createMember(email, firstName, lastName,  tags=[DEFAULT_TAG], status='subscribed'):
+def createOrUpdateMember(email, firstName, lastName,  tags=[DEFAULT_TAG], status='subscribed'):
     api.lists.members.create_or_update(LIST_ID,  subscriber_hash=getHashedEmail(email), data={'email_address': email, 'status': status, 'tags': tags, 'status_if_new': status,
                                             'merge_fields': {'FNAME': firstName, 'LNAME': lastName,  }});
 
